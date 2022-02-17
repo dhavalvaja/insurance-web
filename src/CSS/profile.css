@@ -1,0 +1,27 @@
+.profile{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.profile .mybtn{
+    text-align: center;
+    text-decoration: none;
+    background-color: blueviolet;
+    width: 100px;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    transition: .3s ease;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.profile .mybtn:hover{
+    background-color: white;
+    color: blueviolet;
+    border: 1px solid blueviolet;
+}
+.profile form{
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+}
