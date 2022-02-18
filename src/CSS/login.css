@@ -93,13 +93,3 @@
     height: 50px;
     cursor: pointer;
 }
-.errorbox{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    width: 100%;
-    height: 40px;
-    border: 1px solid red;
-    border-radius: 5px;
-}

@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Authcontext';
 import '../CSS/profile.css'
+import { db } from '../firebase';
+import { addDoc, collection } from 'firebase/firestore';
 
 export default function Profile() {
 
@@ -16,7 +18,23 @@ export default function Profile() {
   const uname = currentUser.displayName
   const uphoto = currentUser.photoURL
   const uemail = currentUser.email
+  const cuid = currentUser.uid
+  const userInfoCollectionRef = collection(db,"users-info")
 
+  const addToDatabase = async () => {
+    setError('')
+    await addDoc(userInfoCollectionRef,{
+      name: 'dhaval',
+      email: emailRef.current.value,
+      uid: currentUser.uid
+    } )
+    .then(()=>{
+      setError('registered to database')
+    })
+    .catch(()=>{
+      setError('error')
+    })
+  }
 
   async function handleLogout() {
     setError("")
@@ -70,7 +88,8 @@ export default function Profile() {
         <p>{uname}</p>
         <p>{uemail}</p>
         </>
-      }
+        }
+        <div className='mybtn' onClick={addToDatabase}>add</div>
         <div className='mybtn' onClick={handleLogout}>Log Out</div>
 
         <h2 >Update Profile</h2>
@@ -91,7 +110,7 @@ export default function Profile() {
             ref={passwordConfirmRef}
             placeholder="Leave blank to keep the same"
           />
-          <input disabled={loading} className="w-100" type="submit"update/>
+          <input disabled={loading} type="submit" value={'update'}/>
         </form>
       </div>
     </>

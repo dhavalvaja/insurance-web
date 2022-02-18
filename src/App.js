@@ -1,4 +1,5 @@
 import React from 'react';
+import './App.css'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom"
 import Login from './components/Login'
 import Home from './components/Home'
@@ -14,18 +15,16 @@ import UserInfo from './components/UserInfo'
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <Navbar />
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/insurance' element={<Insurance />} />
-          <Route path='/feedback' element={<Feedback />} />
-          <Route path='/forgot-password' element={<ForgotPassword />} />
-        </Routes>
-      </AuthProvider>
+      <Navbar />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/insurance' element={<Insurance />} />
+        <Route path='/feedback' element={<Feedback />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+      </Routes>
     </Router>
   );
 }

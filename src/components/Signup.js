@@ -6,24 +6,45 @@ import '../CSS/login.css'
 import googlelogo from '../img/g.ico'
 import facebooklogo from '../img/f.ico'
 import twitterlogo from '../img/t.ico'
+import { db } from '../firebase';
+import { addDoc, collection } from 'firebase/firestore';
+
 
 export default function Signup() {
-
+  const nameRef = useRef()
   const emailRef = useRef()
 	const passwordRef = useRef()
 	const passwordConfirmRef = useRef()
-	const { signup,loginwithgoogle } = useAuth()
+	const { signup,loginwithgoogle,currentUser } = useAuth()
 	const [error, setError] = useState("")
 	const [loading, setLoading] = useState(false) 
   const navigate = useNavigate()
+  const userInfoCollectionRef = collection(db,"users-info")
 
+  const addToDatabase = async () => {
+    setError('')
+    await addDoc(userInfoCollectionRef,{
+      name: nameRef.current.value,
+      email: emailRef.current.value,
+      uid: currentUser.uid
+    } )
+    .then(()=>{
+      setError('registered to database')
+    })
+    .catch(()=>{
+      setError('error')
+    })
+  }
 
   const glogin = () => {
+    setError('')
+    setLoading(true)
     loginwithgoogle(gprovider).then((result) => {
       navigate('/')
     }).catch((error) => {
       setError("Failed to log in")
     });
+    setLoading(false)
   };
 
   async function handleSubmit(e) {
@@ -36,10 +57,11 @@ export default function Signup() {
 			setError("")
 			setLoading(true)
 			await signup(emailRef.current.value, passwordRef.current.value)
-      navigate('/')
 		} catch {
-			setError("Failed to create an account")
+      setError("Failed to create an account")
 		}
+    navigate('/')
+    addToDatabase()
 		setLoading(false)
 	}
 
@@ -50,6 +72,9 @@ export default function Signup() {
             <h2>Sign Up</h2>
             {error && <div className='errorbox'>{error}</div>}
             <form onSubmit={handleSubmit}>
+            <div className='inputbox'>
+                <input type="text" ref={nameRef} placeholder='Name' />
+              </div>
               <div className='inputbox'>
                 <input type="email" ref={emailRef} placeholder='E-mail' />
               </div>
@@ -60,7 +85,7 @@ export default function Signup() {
                 <input type="password" ref={passwordConfirmRef} placeholder='Confirm Password' />
               </div>
               <div className='inputbox'>
-                <input type="submit" value='Sign Up' />
+                <input disabled={loading} type="submit" value='Sign Up' />
               </div>
             </form>
             <div className='logintext'>
