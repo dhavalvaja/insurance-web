@@ -3,6 +3,7 @@ body{
     padding: 0;
     box-sizing: border-box;
     font-family: sans-serif;
+    scroll-behavior: smooth;
 }
 .messagebox{
     display: flex;
@@ -27,4 +28,29 @@ body{
     height: 40px;
     border: 1px solid red;
     border-radius: 5px;
+}
+html {
+	scroll-behavior: smooth;
+}
+
+.dflexr{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: row;
+    margin: 20px;
+    flex-wrap: wrap;
+}
+
+.dflexc{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 20px;
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
 }

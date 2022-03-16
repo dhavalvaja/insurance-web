@@ -1,4 +1,4 @@
-import React ,{useState} from 'react';
+import React ,{useState,useEffect} from 'react';
 import { Link, useNavigate} from 'react-router-dom';
 import { useAuth } from '../Authcontext';
 import '../CSS/navbar.css';
@@ -10,7 +10,17 @@ export default function Navbar() {
   const { currentUser,logout } = useAuth();
   const [loading,setLoding] = useState(false)
   const navigate = useNavigate()
-
+  const [isAuth,setIsAuth] = useState(false)
+  
+  useEffect(() => {
+    if(currentUser!==null){
+      setIsAuth(true)
+    }
+    else{
+      setIsAuth(false)
+    }
+    return 
+  }, [currentUser])
 
   async function handleLogout() {
     setError("")
@@ -34,18 +44,18 @@ export default function Navbar() {
         </ul>
         <div className='nav3'>
           <div className='predict'>
-            <Link to='predict'>
+            <Link to='predictions'>
               Predict
             </Link>
           </div>
-          <div className='profile'>
+          {/* <div className='profile'>
             <Link to={'/profile'}>
               Profile
             </Link>
-          </div>
+          </div> */}
           <div className='profile'>
-            <Link to={0?'/profile':'/login'}>
-              {0?'Profile':'Sign In'}
+            <Link to={isAuth?'/profile':'/login'}>
+              {isAuth?'Profile':'Sign In'}
             </Link>
           </div>
         </div>

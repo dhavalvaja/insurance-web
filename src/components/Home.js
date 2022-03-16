@@ -13,7 +13,7 @@ export default function Home() {
                 <div>
                     <h1>Insurance Policy <span>Premium</span></h1>
                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                    <Link to='/'>Predict</Link>
+                    <Link to='/predictions'>Predict</Link>
                 </div>
                 <div>
                     <img src={sidepik1}/>

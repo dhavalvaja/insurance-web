@@ -7,7 +7,7 @@
 }
 .mycard{
   height: max-content;
-  width: 500px;
+  width: 700px;
   border-radius: 10px;
   border: 1px solid #ccc;
   margin: 25px;
@@ -16,10 +16,20 @@
 }
 form{
   display: flex;
+  flex-direction: column;
   justify-content: space-around;
 }
 .mycard:hover{
   box-shadow: 5px 5px 15px rgb(199, 199, 199);
+}
+.dflex input{
+  width: 100%;
+  min-width: 350px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  font-size: 16px;
+  border-radius: 5px;
 }
 textarea{
   width: 100%;
