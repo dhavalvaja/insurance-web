@@ -1,32 +1,34 @@
-import React, {  useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../Authcontext';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Button } from '@mui/material'
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Card, CardMedia, CardContent, Typography, CardActions } from '@mui/material'
 import lifeimg from '../img/life_insurance.jpg'
 import healthimg from '../img/health_insurance.jpg'
 
 
 export default function Predict() {
-  // const { currentUser } = useAuth()
   const lifedbRef = collection(db, 'life-predictions')
   const medicaldbRef = collection(db, 'medical-predictions')
-  // const [message, setMessage] = useState('')
-  // const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
   const [lifepredictions, setLifepredictions] = useState([])
   const [medicalpredictions, setMedicalpredictions] = useState([])
-  const navigate = useNavigate()
+  const history = useHistory()
+  const { currentUser } = useAuth()
+  const ql = query(lifedbRef, where("userid", "==", currentUser.uid))
+  const qm = query(medicaldbRef, where("userid", "==", currentUser.uid))
 
 
   async function refreshpredictions() {
     const getLifePredictions = async () => {
-      const data = await getDocs(lifedbRef)
+      const data = await getDocs(ql)
       setLifepredictions(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
     }
     const getMedicalPredictions = async () => {
-      const data = await getDocs(medicaldbRef)
+      const data = await getDocs(qm)
       setMedicalpredictions(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
     }
     getLifePredictions()
@@ -34,25 +36,21 @@ export default function Predict() {
   }
 
   useEffect(() => {
-    const getLifePredictions = async () => {
-      const data = await getDocs(lifedbRef)
-      setLifepredictions(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
-    }
-    const getMedicalPredictions = async () => {
-      const data = await getDocs(medicaldbRef)
-      setMedicalpredictions(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
-    }
-    getLifePredictions()
-    getMedicalPredictions()
+    refreshpredictions()
   }, [])
 
   function linktolprediction() {
-    navigate('life-insurance-predict')
+    history.push('/predictions/life-insurance-predict')
   }
   function linktomprediction() {
-    navigate('health-insurance-predict')
+    history.push('/predictions/health-insurance-predict')
   }
-
+  function linktolinfo() {
+    history.push('/info/life-insurance')
+  }
+  function linktominfo() {
+    history.push('/info/health-insurance')
+  }
   return (
     <>
       <div className='dflexr'>
@@ -68,12 +66,12 @@ export default function Predict() {
               Life insurance
             </Typography>
             <Typography variant="body2" color="text.secondary">
-            An insurance premium is the amount of money an individual or business must pay for an insurance policy. Insurance premiums are paid for policies that cover healthcare, auto, home, and life insurance.
+              An insurance premium is the amount of money an individual or business must pay for an insurance policy. Insurance premiums are paid for policies that cover healthcare, auto, home, and life insurance.
             </Typography>
           </CardContent>
           <CardActions>
             <Button size="small" variant='contained' onClick={linktolprediction}>Predict</Button>
-            <Button size="small">Learn More</Button>
+            <Button size="small" onClick={linktolinfo}>Learn More</Button>
           </CardActions>
         </Card>
 
@@ -89,35 +87,91 @@ export default function Predict() {
               Health insurance
             </Typography>
             <Typography variant="body2" color="text.secondary">
-            The amount you pay for your health insurance every month. In addition to your premium, you usually have to pay other costs for your health care, including a deductible, copayments, and coinsurance.
+              The amount you pay for your health insurance every month. In addition to your premium, you usually have to pay other costs for your health care, including a deductible, copayments, and coinsurance.
             </Typography>
           </CardContent>
           <CardActions>
             <Button size="small" variant='contained' onClick={linktomprediction}>Predict</Button>
-            <Button size="small">Learn More</Button>
+            <Button size="small" onClick={linktominfo}>Learn More</Button>
           </CardActions>
         </Card>
       </div>
       <Button onClick={refreshpredictions}>Refresh</Button>
-      <div className='dflexr'>
-        {lifepredictions.map((p) => {
-          return (
-            <div className='mycard'>
-              <h4>Life insurance premium prediction</h4>
-              <p>age :{p.age}</p>
-              <p>diabetes :{p.diabetes?'yes':'no'}</p>
-              <p>bloodpressure :{p.bloodpressure?'yes':'no'}</p>
-              <p>transplant :{p.transplant?'yes':'no'}</p>
-              <p>chronicdisease :{p.chronicdisease?'yes':'no'}</p>
-              <p>height :{p.height}</p>
-              <p>weight :{p.weight}</p>
-              <p>allergies :{p.allergies?'yes':'no'}</p>
-              <p>cancer :{p.cancer?'yes':'no'}</p>
-              <p>surgeries :{p.surgeries?'yes':'no'}</p>
-              <p>prediction :{p.prediction}</p>
-            </div>
-          )
-        })}
+      <div className='dflexc'>
+      <h4>life insurance premium prediction</h4>
+        <table className='table'>
+          <thead>
+            <tr>
+              <th scope='col'>#</th>
+              <th scope='col'>age</th>
+              <th scope='col'>diabetes</th>
+              <th scope='col'>bloodpressure</th>
+              <th scope='col'>transplant</th>
+              <th scope='col'>chronicdisease</th>
+              <th scope='col'>height</th>
+              <th scope='col'>weight</th>
+              <th scope='col'>allergies</th>
+              <th scope='col'>cancer</th>
+              <th scope='col'>surgeries</th>
+              <th scope='col'>prediction</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lifepredictions.map((p, id) => {
+              return (
+                <>
+                  <tr key={id}>
+                    <th scope='row'>{id + 1}</th>
+                    <td>{p.data.age}</td>
+                    <td>{p.diabetes ? 'yes' : 'no'}</td>
+                    <td>{p.bloodpressure ? 'yes' : 'no'}</td>
+                    <td>{p.transplant ? 'yes' : 'no'}</td>
+                    <td>{p.chronicdisease ? 'yes' : 'no'}</td>
+                    <td>{p.data.height}</td>
+                    <td>{p.data.weight}</td>
+                    <td>{p.allergies ? 'yes' : 'no'}</td>
+                    <td>{p.cancer ? 'yes' : 'no'}</td>
+                    <td>{p.surgeries ? 'yes' : 'no'}</td>
+                    <td>{p.prediction}</td>
+                  </tr>
+                </>
+              )
+            })}
+          </tbody>
+        </table>
+            <h4>medical insurance premium prediction</h4>
+        <table className='table'>
+          <thead>
+            <tr>
+              <th scope='col'>#</th>
+              <th scope='col'>age</th>
+              <th scope='col'>bmi</th>
+              <th scope='col'>children</th>
+              <th scope='col'>gender</th>
+              <th scope='col'>region</th>
+              <th scope='col'>smoker</th>
+              <th scope='col'>prediction</th>
+            </tr>
+          </thead>
+          <tbody>
+            {medicalpredictions.map((p,id) => {
+              return (
+                <>
+                <tr key={id}>
+                  <th scope='row'>{id + 1}</th>
+                  <td>{p.data.age}</td>
+                  <td>{p.data.bmi}</td>
+                  <td>{p.data.children}</td>
+                  <td>{p.data.gender}</td>
+                  <td>{p.data.region}</td>
+                  <td>{p.data.smoker}</td>
+                  <td>{p.prediction[0]}</td>
+                </tr>
+                </>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </>
   )

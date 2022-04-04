@@ -1,5 +1,5 @@
 import React,{useRef,useState} from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useHistory} from 'react-router-dom';
 import { useAuth } from '../Authcontext';
 import { auth, gprovider } from '../firebase';
 import '../CSS/login.css'
@@ -15,11 +15,11 @@ export default function Login() {
   const { loginwithgoogle, currentUser } = useAuth()
   const [error,setError] = useState("")
   const [loading,setLoding] =useState(false)
-  const navigate = useNavigate()
+  const history = useHistory()
   
   const glogin = () => {
     loginwithgoogle(gprovider).then((result) => {
-      navigate('/')
+      history.push('/')
     }).catch((error) => {
       setError("Failed to log in")
     });
@@ -30,7 +30,7 @@ export default function Login() {
       setError("")
       setLoding(true)
       await login(EmailRef.current.value,PasswordRef.current.value)
-      navigate('/')
+      history.push('/')
     }catch{
       setError("Failed to Log In")
     }
@@ -59,7 +59,7 @@ export default function Login() {
             </div>
             <ul className='sci'>
               <li onClick={glogin} className='Google'><img alt='google' src={googlelogo}/></li>
-              <li className='Facebook'><img alt='facebook' src={facebooklogo}/></li>
+              <li className='Facebook'></li>
               <li className='Twitter'><img alt='twitter' src={twitterlogo}/></li>
             </ul>
           </div>

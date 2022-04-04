@@ -1,62 +1,87 @@
-import React ,{useState,useEffect} from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from '../Authcontext';
 import '../CSS/navbar.css';
 import logo from '../img/logo.png'
 
-
 export default function Navbar() {
-  const [error,setError] = useState("")
-  const { currentUser,logout } = useAuth();
-  const [loading,setLoding] = useState(false)
-  const navigate = useNavigate()
-  const [isAuth,setIsAuth] = useState(false)
-  
+  const [error, setError] = useState("")
+  const { currentUser, logout,userPhoto } = useAuth();
+  const [loading, setLoding] = useState(false)
+  const history = useHistory()
+  const [isAuth, setIsAuth] = useState(false)
+  const [uphoto,setUphoto] = useState()
+
   useEffect(() => {
-    if(currentUser!==null){
+    if (currentUser !== null) {
       setIsAuth(true)
+      setUphoto(currentUser.photoURL)
     }
-    else{
+    else {
       setIsAuth(false)
     }
-    return 
+    return
   }, [currentUser])
 
   async function handleLogout() {
     setError("")
     try {
       await logout()
-      navigate('/login')
+      history.push('/login')
     } catch {
       setError("Failed to log out")
     }
   }
   return (
     <>
-      <div className='navbar'>
-        {/* <Link className='logo1' to='/'>Insurance</Link> */}
+      <div className='mnavbar'>
         <img className='logo' src={logo} />
         <ul className='nav2'>
           <li><Link to='/'>Home</Link></li>
-          <li><Link to='/insurance'>Insurance</Link> </li>
+          <li><Link to='/info'>Insurance</Link> </li>
+          <li><Link to='/policies'>policy</Link></li>
           <li><Link to='/feedback'>Feedback</Link></li>
           <li><Link to='/contact'>Contact</Link></li>
         </ul>
         <div className='nav3'>
           <div className='predict'>
-            <Link to='predictions'>
+            <Link to='/predictions'>
               Predict
             </Link>
           </div>
-          {/* <div className='profile'>
-            <Link to={'/profile'}>
-              Profile
-            </Link>
-          </div> */}
-          <div className='profile'>
-            <Link to={isAuth?'/profile':'/login'}>
-              {isAuth?'Profile':'Sign In'}
-            </Link>
+          <div>
+            {
+              isAuth ?
+                <div className='mdropdown'>
+                  {uphoto?
+                  <img
+                  alt='profile'
+                  src={uphoto}
+                  height={40}
+                  />:
+                  <img 
+                  alt='profile'
+                  src={userPhoto}
+                  height={40}
+                  />
+                  }
+                  <div className='mdropdown-content'>
+                    <div>
+                      <Link to={'/user-profile'}>My Profile</Link>
+                    </div>
+                    <div>
+                      <Link to={'/edit-profile'}>Edit Profile</Link>
+                    </div>
+                    <div>
+                      <button onClick={handleLogout}>Log out</button>
+                    </div>
+                  </div>
+                </div>
+                :
+                <div className='predict'>
+                <Link to={'login'} >Log In</Link>
+                </div>
+            }
           </div>
         </div>
       </div>

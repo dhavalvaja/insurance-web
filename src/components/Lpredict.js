@@ -1,9 +1,9 @@
 import { Slider, FormLabel, RadioGroup, FormControlLabel, Radio, Switch, Button, Typography } from '@mui/material'
-import React, { useState,useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import { addDoc, updateDoc, deleteDoc, doc, collection, Timestamp, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-
+import { useAuth } from '../Authcontext';
 
 // {
 // "age" : 19,
@@ -18,51 +18,53 @@ import { db } from '../firebase';
 // "surgeries" : 0
 // }
 export default function Lpredict() {
-  const [loading,setLoading] = useState(false)
+
+  const { currentUser } = useAuth()
+  const [loading, setLoading] = useState(false)
   const [age, setAge] = useState(20)
-  const [diabetes,setDiabetes] = useState(false)
-  const [bloodpressure,setBloodpressure] = useState(false)
-  const [transplant,setTransplant] = useState(false)
-  const [chronicdisease,setChronicdisease] = useState(false)
-  const [height,setHeight] = useState(155)
-  const [weight,setWeight] = useState(50)
-  const [allergies,setAllergies] = useState(false)
-  const [cancer,setCancer] = useState(false)
-  const [surgeries,setSurgeries] = useState(false)
+  const [diabetes, setDiabetes] = useState(false)
+  const [bloodpressure, setBloodpressure] = useState(false)
+  const [transplant, setTransplant] = useState(false)
+  const [chronicdisease, setChronicdisease] = useState(false)
+  const [height, setHeight] = useState(155)
+  const [weight, setWeight] = useState(50)
+  const [allergies, setAllergies] = useState(false)
+  const [cancer, setCancer] = useState(false)
+  const [surgeries, setSurgeries] = useState(false)
   const [data_list, setData_list] = useState([])
-  const [data,setData] = useState({})
-  const [prediction,setPrediction] = useState(0)
+  const [data, setData] = useState({})
+  const [prediction, setPrediction] = useState(0)
   const lifedbRef = collection(db, 'life-predictions')
 
-  const handleAgechange = (e,newValue) => {
+  const handleAgechange = (e, newValue) => {
     // console.log(EmailRef.current.value)
     setAge(newValue)
   }
-  const handleDiabeteschange = (e,newValue) => {
+  const handleDiabeteschange = (e, newValue) => {
     setDiabetes(newValue)
   }
-  const handleBloodpressurechange = (e,newValue) => {
+  const handleBloodpressurechange = (e, newValue) => {
     setBloodpressure(newValue)
   }
-  const handleTransplantchange = (e,newValue) => {
+  const handleTransplantchange = (e, newValue) => {
     setTransplant(newValue)
   }
-  const handleChronicdiseasechange = (e,newValue) => {
+  const handleChronicdiseasechange = (e, newValue) => {
     setChronicdisease(newValue)
   }
-  const handleAllergieschange = (e,newValue) => {
+  const handleAllergieschange = (e, newValue) => {
     setAllergies(newValue)
   }
-  const handleCancerchange = (e,newValue) => {
+  const handleCancerchange = (e, newValue) => {
     setCancer(newValue)
   }
-  const handleSurgerieschange = (e,newValue) => {
+  const handleSurgerieschange = (e, newValue) => {
     setSurgeries(newValue)
   }
-  const handleHeightchange = (e,newValue) => {
+  const handleHeightchange = (e, newValue) => {
     setHeight(newValue)
   }
-  const handleWeightchange = (e,newValue) => {
+  const handleWeightchange = (e, newValue) => {
     setWeight(newValue)
   }
 
@@ -70,39 +72,26 @@ export default function Lpredict() {
     e.preventDefault()
     setLoading(true)
     setData({
-        age : age,
-        diabetes : diabetes?1:0,
-        bloodpressure :bloodpressure?1:0,
-        transplant : transplant?1:0,
-        chronicdisease :chronicdisease?1:0,
-        height : height,
-        weight : weight,
-        allergies : allergies?1:0,
-        cancer : cancer?1:0,
-        surgeries : surgeries?1:0
+      age: age,
+      diabetes: diabetes ? 1 : 0,
+      bloodpressure: bloodpressure ? 1 : 0,
+      transplant: transplant ? 1 : 0,
+      chronicdisease: chronicdisease ? 1 : 0,
+      height: height,
+      weight: weight,
+      allergies: allergies ? 1 : 0,
+      cancer: cancer ? 1 : 0,
+      surgeries: surgeries ? 1 : 0
     })
-    await putData()
-    // .then(()=>{
-    //   addDoc(lifedbRef,{
-    //     age : age,
-    //     diabetes : diabetes,
-    //     bloodpressure :bloodpressure,
-    //     transplant : transplant,
-    //     chronicdisease :chronicdisease,
-    //     height : height,
-    //     weight : weight,
-    //     allergies : allergies,
-    //     cancer : cancer,
-    //     surgeries : surgeries,
-    //     prediction : prediction
-    //   }).then(()=>{
-    //     console.log("uploded")
-    //   }).catch((err)=>{
-    //     console.log(err)
-    //   })
-    // })
-    setLoading(false)
   }
+  const [didmount, setdidmount] = useState(false)
+  useEffect(async () => {
+    if (didmount) {
+      await putData()
+    }
+    setdidmount(true)
+    setLoading(false)
+  }, [data])
 
   async function putData() {
     // .put(`http://localhost:8000/api/medical-insurance/${data.id}/`,data)
@@ -112,23 +101,15 @@ export default function Lpredict() {
       .then((res) => {
         console.log(res.data)
         setPrediction(res.data[1])
-        addDoc(lifedbRef,{
-        age : age,
-        diabetes : diabetes,
-        bloodpressure :bloodpressure,
-        transplant : transplant,
-        chronicdisease :chronicdisease,
-        height : height,
-        weight : weight,
-        allergies : allergies,
-        cancer : cancer,
-        surgeries : surgeries,
-        prediction : prediction
-      }).then(()=>{
-        console.log("uploded")
-      }).catch((err)=>{
-        console.log(err)
-      })
+        addDoc(lifedbRef, {
+          userid: currentUser.uid,
+          data:res.data[0],
+          prediction:res.data[1]
+        }).then(() => {
+          console.log("uploded")
+        }).catch((err) => {
+          console.log(err)
+        })
       })
       .catch(err => { console.log(err) })
   }
@@ -155,22 +136,22 @@ export default function Lpredict() {
           </div>
           <div className='card-predict'>
             <FormLabel>Diabetes</FormLabel>
-            <Typography>{diabetes?'yes':'no'}</Typography>
+            <Typography>{diabetes ? 'yes' : 'no'}</Typography>
             <Switch value={diabetes} onChange={handleDiabeteschange} />
           </div>
           <div className='card-predict'>
             <FormLabel>Bloodpressure</FormLabel>
-            <Typography>{bloodpressure?'yes':'no'}</Typography>
+            <Typography>{bloodpressure ? 'yes' : 'no'}</Typography>
             <Switch value={bloodpressure} onChange={handleBloodpressurechange} />
           </div>
           <div className='card-predict'>
             <FormLabel>Transplant</FormLabel>
-            <Typography>{transplant?'yes':'no'}</Typography>
+            <Typography>{transplant ? 'yes' : 'no'}</Typography>
             <Switch value={transplant} onChange={handleTransplantchange} />
           </div>
           <div className='card-predict'>
             <FormLabel>Chronicdisease</FormLabel>
-            <Typography>{chronicdisease?'yes':'no'}</Typography>
+            <Typography>{chronicdisease ? 'yes' : 'no'}</Typography>
             <Switch value={chronicdisease} onChange={handleChronicdiseasechange} />
           </div>
           <div className='card-predict'>
@@ -192,7 +173,7 @@ export default function Lpredict() {
             <Slider
               defaultValue={50}
               valueLabelDisplay="auto"
-              value={weight} 
+              value={weight}
               onChange={handleWeightchange}
               step={1}
               min={30}
@@ -201,17 +182,17 @@ export default function Lpredict() {
           </div>
           <div className='card-predict'>
             <FormLabel>Allergies</FormLabel>
-            <Typography>{allergies?'yes':'no'}</Typography>
+            <Typography>{allergies ? 'yes' : 'no'}</Typography>
             <Switch value={allergies} onChange={handleAllergieschange} />
           </div>
           <div className='card-predict'>
             <FormLabel>Cancer</FormLabel>
-            <Typography>{cancer?'yes':'no'}</Typography>
+            <Typography>{cancer ? 'yes' : 'no'}</Typography>
             <Switch value={cancer} onChange={handleCancerchange} />
           </div>
           <div className='card-predict'>
             <FormLabel>Surgeries</FormLabel>
-            <Typography>{surgeries?'yes':'no'}</Typography>
+            <Typography>{surgeries ? 'yes' : 'no'}</Typography>
             <Switch value={surgeries} onChange={handleSurgerieschange} />
           </div>
           <div className='card-predict prediction'>

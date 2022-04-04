@@ -1,5 +1,6 @@
 import React,{useContext,useState,useEffect} from "react";
 import { gprovider, auth } from './firebase'
+import profileimg from './img/dprofile.png'
 
 const Authcontext = React.createContext();
 
@@ -10,7 +11,8 @@ export function useAuth(){
 export default function AuthProvider({ children }){
     const [currentUser,setCurrentUser] = useState()
     const [loading,setLoding] = useState(true)
-    
+    const [userPhoto,setUserPhoto] = useState(profileimg)
+
     function signup(email,password){
         return auth.createUserWithEmailAndPassword(email,password)
     }
@@ -42,6 +44,11 @@ export default function AuthProvider({ children }){
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user=>{
             setCurrentUser(user)
+            try {
+                setUserPhoto(currentUser.photoURL)
+            } catch (error) {
+                
+            }
             setLoding(false)
         })
         return unsubscribe
@@ -49,6 +56,7 @@ export default function AuthProvider({ children }){
 
     const value = {
         currentUser,
+        userPhoto,
         login,
         signup,
         loginwithgoogle,

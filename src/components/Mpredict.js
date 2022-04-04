@@ -1,12 +1,15 @@
-import React, { useState,useRef } from 'react'
+import React, { useState,useEffect } from 'react'
 import axios from 'axios'
-import { Slider, FormLabel, RadioGroup, FormControlLabel, Radio, Switch, Button, Typography } from '@mui/material'
+import { Slider, FormLabel, RadioGroup, FormControlLabel, Radio, Switch, Button, Typography, dividerClasses } from '@mui/material'
 import '../CSS/Mpredict.css'
-
+import { addDoc, updateDoc, deleteDoc, doc, collection, Timestamp, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useAuth } from '../Authcontext';
 // let data_list = [data]
 
 export default function Mpredict() {
 
+  const { currentUser } = useAuth()
   const [loading,setLoading] = useState(false)
   const [age, setAge] = useState(20)
   const [gender, setGender] = useState('male')
@@ -17,6 +20,8 @@ export default function Mpredict() {
   const [data_list, setData_list] = useState([])
   const [data,setData] = useState({})
   const [prediction,setPrediction] = useState(0)
+  const medicalRef = collection(db,'medical-predictions')
+
 
   const handleAgechange = (e,newValue) => {
     setAge(newValue)
@@ -47,9 +52,17 @@ export default function Mpredict() {
       smoker:(smoker)?'yes':'no',
       region:region
     })
-    await putData()
-    setLoading(false)
   }
+  
+  const [didmount,setDidmount] = useState(false)
+  useEffect( async () => {
+    if(didmount){
+      await putData()
+    }
+    setDidmount(true)
+    setLoading(false)
+  }, [data])
+
 
   // async function getData() {
   //   await axios
@@ -65,14 +78,27 @@ export default function Mpredict() {
   async function putData() {
     // .put(`http://localhost:8000/api/medical-insurance/${data.id}/`,data)
     // .post(`http://localhost:8000/api/medical-insurance/`,data)
+    console.log(data)
     await axios
       .post("http://localhost:8000/api/medical-insurance/", data)
       .then(res => {
         console.log(res.data)
         setPrediction(res.data[1])
+        addDoc(medicalRef,{
+          userid: currentUser.uid,
+          data:res.data[0],
+          prediction:res.data[1]
+        })
+        .then(()=>{
+          console.log("uploaded")
+        })
+        .catch((err)=>{
+          console.log(err)
+        })
       })
       .catch(err => { console.log(err) })
   }
+
 
   return (
     <>

@@ -1,6 +1,5 @@
-.container{
+.mcontainer{
     width: 100%;
-    background-color: #eee;
     display: flex;
     font-family: sans-serif;
     color: #555;
@@ -9,7 +8,8 @@
     line-height: 1.6;
     transition: .3s;
 } 
-.container .content{
+.mcontainer .mcontent{
+    border: 1px solid #ccc;
     background-color: white;
     padding: 20px;
     margin: 10px;
@@ -18,8 +18,10 @@
     border-radius: 10px;
     resize: horizontal;
     overflow: auto;
+    box-shadow: 0px 1px 5px #ccc;
 }
-.container .contentbar{
+.mcontainer .mcontentbar{
+    border-left: 3px solid blueviolet;
     position: sticky;
     --offset : 50px;
     margin-top: calc(100vh + var(--offset));
@@ -31,20 +33,29 @@
     width: 20%;
     transition: .3s;
     height: max-content;
+    box-shadow: 0px 1px 5px #ccc;
 }
-.container .content:hover,
-.container .contentbar:hover{
-    box-shadow: 2px 2px 15px #ccc;
+/* .mcontainer .mcontent:hover,
+.mcontainer .mcontentbar:hover{
+    
+} */
+
+.mcontainer .mcontent h1,
+.mcontainer .mcontent h2{
+    border-left: 3px solid blueviolet;
+    border-radius: 3px;
+    padding: 5px 10px;
+    box-shadow: 0px 0px 5px #ccc;
 }
-.container .contentbar ul{
+.mcontainer .mcontentbar ul{
     list-style: none;
 }
-.container .contentbar ol li a,
-.container .contentbar ul li a{
+.mcontainer .mcontentbar ol li a,
+.mcontainer .mcontentbar ul li a{
     text-decoration: none;
     color: #555;
 }
-.container .contentbar h3{
+.mcontainer .mcontentbar h3{
     margin: auto;
     width: max-content;
 }

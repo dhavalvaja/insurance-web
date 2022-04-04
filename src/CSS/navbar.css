@@ -1,6 +1,6 @@
-/* navbar */
+/* mnavbar */
 
-.navbar{
+.mnavbar {
     margin: 0;
     padding: 0;
     border-bottom: 1px solid rgb(204, 204, 204);
@@ -12,47 +12,57 @@
     z-index: 100;
     background: #fff;
 }
-.navbar .logo1{
-    font-size: 2em;
-    text-decoration: none;
-    color: black;
-}
-.navbar .logo{
+
+.mnavbar .logo {
     height: 50px;
     cursor: pointer;
     margin-left: 50px;
 }
-.navbar ul{
+
+.mnavbar ul {
     min-width: 400px;
     width: 600px;
     list-style: none;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    padding: 10px;
+    height: 100%;
+    margin: auto;
 }
-.navbar ul li{
+
+.mnavbar ul li {
     padding: 5px 10px;
-    height: max-content;
+    height: 100%;
     width: max-content;
     border-radius: 5px;
+    display: flex;
+    align-items: center;
 }
-.navbar ul li a{
-    font-size: 16px;
+
+.mnavbar ul li a {
+    font-size: 20px;
     text-decoration: none;
-    color: black;
+    color: #555;
     font-weight: 500;
 }
-.navbar ul li a:hover{
+
+.mnavbar ul li a:hover {
     color: blueviolet;
 }
-.navbar .nav3{
+
+.mnavbar ul li a:focus {
+    border-bottom: 2px solid blueviolet;
+    font-size: 22px;
+}
+
+.mnavbar .nav3 {
     min-width: 200px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
 }
-.navbar .nav3 .predict a{
+
+.mnavbar .nav3 .predict a {
     text-decoration: none;
     background-color: blueviolet;
     color: white;
@@ -60,21 +70,79 @@
     border-radius: 5px;
     cursor: pointer;
 }
-.navbar .nav3 .predict a:hover{
+
+.mnavbar .nav3 .predict a:hover {
     background-color: white;
     color: blueviolet;
     border: 1px solid blueviolet;
 }
-.navbar .nav3 .profile a{
+
+.mnavbar .nav3 .mprofile a {
     text-decoration: none;
-    background-color:  white;
+    background-color: white;
     color: blueviolet;
     border: 1px solid blueviolet;
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
 }
-.navbar .nav3 .profile a:hover{
+
+.mnavbar .nav3 .mprofile a:hover {
     background-color: blueviolet;
     color: white;
+}
+
+.mdropdown {
+    display: inline-block;
+    cursor: pointer;
+}
+.mdropdown img{
+    border-radius: 50%;
+}
+.mdropdown-content {
+    display: none;
+    z-index: 1;
+    position: absolute;
+    border-top: 3px solid blueviolet;
+    box-sizing: border-box;
+    flex-direction: column;
+    width: 170px;
+    transform: translate(-130px, 0px);
+    background-color: #fff;
+    box-shadow: 0 1px 20px #ccc;
+    border-radius: 5px;
+}
+.mdropdown-content div a{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+    margin-left: 15px;
+}
+.mdropdown-content div button{
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    background: inherit;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    padding-left: 15px;
+}
+.mdropdown:hover .mdropdown-content {
+    display: flex;
+    height: max-content;
+}
+.mdropdown-content div{
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+}
+.mdropdown-content div:hover{   
+    background-color: #eee;
 }

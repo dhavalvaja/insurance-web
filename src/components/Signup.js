@@ -1,5 +1,5 @@
 import React,{useRef,useState} from 'react';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useHistory} from 'react-router-dom';
 import { gprovider } from '../firebase';
 import { useAuth } from '../Authcontext';
 import '../CSS/login.css'
@@ -18,7 +18,7 @@ export default function Signup() {
 	const { signup,loginwithgoogle,currentUser } = useAuth()
 	const [error, setError] = useState("")
 	const [loading, setLoading] = useState(false) 
-  const navigate = useNavigate()
+  const history = useHistory()
   const userInfoCollectionRef = collection(db,"users-info")
 
   const addToDatabase = async () => {
@@ -40,7 +40,7 @@ export default function Signup() {
     setError('')
     setLoading(true)
     loginwithgoogle(gprovider).then((result) => {
-      navigate('/')
+      history.push('/edit-profile')
     }).catch((error) => {
       setError("Failed to log in")
     });
@@ -60,8 +60,7 @@ export default function Signup() {
 		} catch {
       setError("Failed to create an account")
 		}
-    navigate('/')
-    addToDatabase()
+    history.push('/edit-profile')
 		setLoading(false)
 	}
 

@@ -4,8 +4,8 @@ import '../CSS/Info.css'
 export default function Insurance() {
   return (
     <>
-      <div className='container'>
-        <div className='contentbar'>
+      <div className='mcontainer'>
+        <div className='mcontentbar'>
           <h3>Table of Content</h3>
           <ol>
             <li>
@@ -33,7 +33,7 @@ export default function Insurance() {
             </li>
           </ol>
         </div>
-        <div className='content'>
+        <div className='mcontent'>
           <h1 id='1'>What is Insurance?</h1>
           <p>Insurance is a contract, represented by a policy, in which an individual or entity receives financial protection or reimbursement against losses from an insurance company. The company pools clients' risks to make payments more affordable for the insured.</p>
           <p>Insurance policies are used to hedge against the risk of financial losses, both big and small, that may result from damage to the insured or her property, or from liability for damage or injury caused to a third party.</p>
