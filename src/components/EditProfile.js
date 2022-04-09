@@ -1,17 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useAuth } from '../Authcontext';
 import '../CSS/edit-profile.css'
 import { db } from '../firebase';
 import { addDoc, collection } from 'firebase/firestore';
-import { Form, Button, Card, Alert, Container } from "react-bootstrap"
 
 export default function EditProfile() {
 
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { currentUser, upadatepassword, updateemail, userPhoto } = useAuth()
-  const history = useHistory()
+  const { currentUser, userPhoto } = useAuth()
+  // const history = useHistory()
   const userInfoCollectionRef = collection(db, "users-info")
   const [isAuth, setIsAuth] = useState(false)
 
@@ -31,7 +30,7 @@ export default function EditProfile() {
   const [ucity, setUcity] = useState()
   const [ugender, setUgender] = useState()
   const [udob, setUdob] = useState()
-  const [cuid, setCuid] = useState()
+  // const [cuid, setCuid] = useState()
 
   useEffect(() => {
     if (currentUser !== null) {
@@ -62,14 +61,14 @@ export default function EditProfile() {
       state: stateRef.current.value,
       city: cityRef.current.value
     })
-    .then(() => {
-      setError('registered to database')
-      console.log("updated")
-    })
-    .catch(() => {
-      setError('error')
-      console.log("error")
-    })
+      .then(() => {
+        setError('registered to database')
+        console.log("updated")
+      })
+      .catch(() => {
+        setError('error')
+        console.log("error")
+      })
   }
 
   // function handleSubmit(e) {
@@ -183,46 +182,3 @@ export default function EditProfile() {
     </>
   )
 }
-{/* <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
-        <div className="w-100" style={{ maxWidth: "400px" }}>
-          <Card>
-            <Card.Body>
-              <h2 className="text-center mb-4">Update Profile</h2>
-              {error && <Alert variant="danger">{error}</Alert>}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group id="email">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    ref={emailRef}
-                    required
-                    defaultValue={currentUser.email}
-                  />
-                </Form.Group>
-                <Form.Group id="password">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    ref={passwordRef}
-                    placeholder="Leave blank to keep the same"
-                  />
-                </Form.Group>
-                <Form.Group id="password-confirm">
-                  <Form.Label>Password Confirmation</Form.Label>
-                  <Form.Control
-                    type="password"
-                    ref={passwordConfirmRef}
-                    placeholder="Leave blank to keep the same"
-                  />
-                </Form.Group>
-                <Button disabled={loading} className="w-100" type="submit">
-                  Update
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
-          <div className="w-100 text-center mt-2">
-            <Link to="/">Cancel</Link>
-          </div>
-        </div>
-      </Container> */}

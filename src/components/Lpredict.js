@@ -1,7 +1,7 @@
-import { Slider, FormLabel, RadioGroup, FormControlLabel, Radio, Switch, Button, Typography } from '@mui/material'
-import React, { useState, useRef, useEffect } from 'react'
+import { Slider, FormLabel, Switch, Button, Typography } from '@mui/material'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { addDoc, updateDoc, deleteDoc, doc, collection, Timestamp, getDocs, query, where, getDoc } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../Authcontext';
 import MJSONDATA from '../policy60.json'
@@ -20,7 +20,6 @@ export default function Lpredict() {
   const [allergies, setAllergies] = useState(false)
   const [cancer, setCancer] = useState(false)
   const [surgeries, setSurgeries] = useState(false)
-  const [data_list, setData_list] = useState([])
   const [data, setData] = useState({})
   const [prediction, setPrediction] = useState(0)
   const [policy, setpolicy] = useState([])
@@ -78,10 +77,13 @@ export default function Lpredict() {
     })
   }
   const [didmount, setdidmount] = useState(false)
-  useEffect(async () => {
-    if (didmount) {
-      await putData()
+  useEffect(() => {
+    async function putdata() {
+      if (didmount) {
+        await putData()
+      }
     }
+    putdata()
     setdidmount(true)
     setLoading(false)
   }, [data])
@@ -94,37 +96,38 @@ export default function Lpredict() {
       .then((res) => {
         console.log(res.data)
         setPrediction(res.data[1])
-        // addDoc(lifedbRef, {
-        //   userid: currentUser.uid,
-        //   data: res.data[0],
-        //   prediction: res.data[1]
-        // })
-        //   .then(() => {
-        //     console.log("uploded")
-        //   })
-        //   .catch((err) => {
-        //     console.log(err)
-        //   })
+        addDoc(lifedbRef, {
+          userid: currentUser.uid,
+          data: res.data[0],
+          prediction: res.data[1]
+        })
+          .then(() => {
+            console.log("uploded")
+          })
+          .catch((err) => {
+            console.log(err)
+          })
       })
       .catch(err => { console.log(err) })
   }
 
-  async function getpolicies() {
+  useEffect(() => {
+    async function filterdata() {
 
-  }
-  useEffect(async () => {
-    setpolicy(MJSONDATA.filter((val) => {
-      let val1
-      if (prediction === 0 || prediction === "") {
-        return
-      }
-      else if (val['yearly premium'] > (prediction - 250)
-        && val['yearly premium'] < (Number(prediction) + 250) 
-      ) {
-        val1 = val
-      }
-      return val1
-    }))
+      setpolicy(MJSONDATA.filter((val) => {
+        let val1
+        if (prediction === 0 || prediction === "") {
+          return null
+        }
+        else if (val['yearly premium'] > (prediction - 250)
+          && val['yearly premium'] < (Number(prediction) + 250)
+        ) {
+          val1 = val
+        }
+        return val1
+      }))
+    }
+    filterdata()
   }, [prediction])
 
   // const EmailRef = useRef()
