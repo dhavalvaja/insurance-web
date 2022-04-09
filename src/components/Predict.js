@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../Authcontext';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, doc, query, where, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Button } from '@mui/material'
 import { useHistory } from 'react-router-dom';
 import { Card, CardMedia, CardContent, Typography, CardActions } from '@mui/material'
 import lifeimg from '../img/life_insurance.jpg'
 import healthimg from '../img/health_insurance.jpg'
+import { AiOutlineDelete } from 'react-icons/ai'
 
 
 export default function Predict() {
   const lifedbRef = collection(db, 'life-predictions')
   const medicaldbRef = collection(db, 'medical-predictions')
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
+  // const [message, setMessage] = useState('')
+  // const [error, setError] = useState('')
   const [lifepredictions, setLifepredictions] = useState([])
   const [medicalpredictions, setMedicalpredictions] = useState([])
   const history = useHistory()
@@ -33,6 +34,27 @@ export default function Predict() {
     }
     getLifePredictions()
     getMedicalPredictions()
+  }
+
+  const deleteLPrediction = async (id) => {
+    await deleteDoc(doc(db, 'life-predictions', id))
+      .then(() => {
+        console.log("deleted")
+        refreshpredictions()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  const deleteMPrediction = async (id) => {
+    await deleteDoc(doc(db, 'medical-predictions', id))
+      .then(() => {
+        console.log("deleted")
+        refreshpredictions()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   useEffect(() => {
@@ -98,7 +120,7 @@ export default function Predict() {
       </div>
       <Button onClick={refreshpredictions}>Refresh</Button>
       <div className='dflexc'>
-      <h4>life insurance premium prediction</h4>
+        <h4>life insurance premium prediction</h4>
         <table className='table'>
           <thead>
             <tr>
@@ -114,32 +136,35 @@ export default function Predict() {
               <th scope='col'>cancer</th>
               <th scope='col'>surgeries</th>
               <th scope='col'>prediction</th>
+              <th scope='col'>delete</th>
             </tr>
           </thead>
           <tbody>
             {lifepredictions.map((p, id) => {
               return (
-                <>
-                  <tr key={id}>
-                    <th scope='row'>{id + 1}</th>
-                    <td>{p.data.age}</td>
-                    <td>{p.diabetes ? 'yes' : 'no'}</td>
-                    <td>{p.bloodpressure ? 'yes' : 'no'}</td>
-                    <td>{p.transplant ? 'yes' : 'no'}</td>
-                    <td>{p.chronicdisease ? 'yes' : 'no'}</td>
-                    <td>{p.data.height}</td>
-                    <td>{p.data.weight}</td>
-                    <td>{p.allergies ? 'yes' : 'no'}</td>
-                    <td>{p.cancer ? 'yes' : 'no'}</td>
-                    <td>{p.surgeries ? 'yes' : 'no'}</td>
-                    <td>{p.prediction}</td>
-                  </tr>
-                </>
+                <tr key={id}>
+                  <th scope='row'>{id + 1}</th>
+                  <td>{p.data.age}</td>
+                  <td>{p.diabetes ? 'yes' : 'no'}</td>
+                  <td>{p.bloodpressure ? 'yes' : 'no'}</td>
+                  <td>{p.transplant ? 'yes' : 'no'}</td>
+                  <td>{p.chronicdisease ? 'yes' : 'no'}</td>
+                  <td>{p.data.height}</td>
+                  <td>{p.data.weight}</td>
+                  <td>{p.allergies ? 'yes' : 'no'}</td>
+                  <td>{p.cancer ? 'yes' : 'no'}</td>
+                  <td>{p.surgeries ? 'yes' : 'no'}</td>
+                  <td>{p.prediction}</td>
+                  <td><button
+                    onClick={() => { deleteLPrediction(p.id) }}
+                    style={{ cursor: "pointer" }}><AiOutlineDelete/>
+                  </button></td>
+                </tr>
               )
             })}
           </tbody>
         </table>
-            <h4>medical insurance premium prediction</h4>
+        <h4>medical insurance premium prediction</h4>
         <table className='table'>
           <thead>
             <tr>
@@ -151,12 +176,12 @@ export default function Predict() {
               <th scope='col'>region</th>
               <th scope='col'>smoker</th>
               <th scope='col'>prediction</th>
+              <th scope='col'>delete</th>
             </tr>
           </thead>
           <tbody>
-            {medicalpredictions.map((p,id) => {
+            {medicalpredictions.map((p, id) => {
               return (
-                <>
                 <tr key={id}>
                   <th scope='row'>{id + 1}</th>
                   <td>{p.data.age}</td>
@@ -166,8 +191,11 @@ export default function Predict() {
                   <td>{p.data.region}</td>
                   <td>{p.data.smoker}</td>
                   <td>{p.prediction[0]}</td>
+                  <td><button
+                    onClick={() => { deleteMPrediction(p.id) }}
+                    style={{ cursor: "pointer" }}><AiOutlineDelete/>
+                  </button></td>
                 </tr>
-                </>
               )
             })}
           </tbody>

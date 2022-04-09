@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import MJSONDATA from '../policy60.json'
 import '../CSS/Policy.css'
+// import { db } from '../firebase'
+// import { collection } from 'firebase/firestore'
+import StripeCheckout from 'react-stripe-checkout';
+import { useAuth } from '../Authcontext';
+
 
 export default function Policy() {
   const [insurer, setinsurer] = useState("")
@@ -9,20 +14,48 @@ export default function Policy() {
   const [gender, setgender] = useState("")
   const [mpremium, setmpremium] = useState("")
   const [ypremium, setypremium] = useState("")
+  const { currentUser } = useAuth()
+  // const [policy, setpolicy] = useState([])
+  // const policyRef = collection(db, "policies")
+  // const [data, setdata] = useState()
+  // const [didmount, setdidmount] = useState(false)
 
+  const onToken = (token) => {
+    fetch('/save-stripe-token', {
+      method: 'POST',
+      body: JSON.stringify(token),
+    }).then(response => {
+      response.json().then(data => {
+        alert(`We are in business, ${data.email}`);
+      });
+    });
+  }
   return (
     <>
-      <div className='policy'>
-        <table className='table'>
+      {/* <button onClick={() => { getpolicies() }}>getpolicy</button> */}
+      <div className='policy d-flex flex-column'>
+        <h1 className='text-center w-auto m-3 p-3 shadow m-auto mt-3 mb-3 rounded' style={{ borderBottom: "3px solid blueviolet" }}>List of Policies</h1>
+        <table className='table w-auto m-auto rounded shadow-lg'>
           <thead>
             <tr>
-              <th scope='col'>#</th>
+              {/* <th scope='col'>#</th>
               <th scope='col'>insurer</th>
               <th scope='col'>life cover</th>
-              {/* <th scope='col'>till age</th> */}
+              <th scope='col'>till age</th>
               <th scope='col'>gender</th>
               <th scope='col'>monthly premium</th>
               <th scope='col'>yearly premium</th>
+              <th scope='col'>Buy</th>
+              <th scope='col'>Buy</th> */}
+
+              <th>#</th>
+              <th>insurer</th>
+              <th>life cover</th>
+              <th>gender</th>
+              <th>monthly premium</th>
+              <th>yearly premium</th>
+              <th>Buy</th>
+              <th>Buy</th>
             </tr>
             <tr>
               <th>select</th>
@@ -127,13 +160,23 @@ export default function Policy() {
               .map((val, key) => {
                 return (
                   <tr key={key}>
-                    <th scope='row'>{key + 1}</th>
+                    <th>{key + 1}</th>
                     <td>{val.insurer.toUpperCase()}</td>
                     <td>{val['life cover']}</td>
                     {/* <td>{val['till age']}</td> */}
-                    <td>{val.Gender.charAt(0).toUpperCase()+val.Gender.slice(1)}</td>
+                    <td>{val.Gender}</td>
                     <td>{val['mouthly premium'].toFixed(2)}</td>
                     <td>{val['yearly premium'].toFixed(2)}</td>
+                    <td><a href='https://buy.stripe.com/test_cN26sfaELgaEbcc9AC' target="_blank" rel="noopener noreferrer">Buy</a></td>
+                    <td><StripeCheckout
+                      name={val.insurer}
+                      currency='INR'
+                      amount={val['mouthly premium'] * 100}
+                      token={onToken}
+                      email={currentUser.email}
+                      billingAddress
+                      stripeKey="pk_test_51KmArVSIQ4G64EGhp7J8K0m0eGHGukpOACoU0RrNVJLuCjuHGA0wYjYscLsJ2nV45K9x3vkdCMpYGEs3JMQCRRI000M0objpqI"
+                    /></td>
                   </tr>
                 )
               })}

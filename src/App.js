@@ -7,6 +7,7 @@ import Home from './components/Home'
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Test from './components/Test';
+import uploadpolicy from './uploadpolicy';
 
 import Login from './components/Login'
 import Signup from './components/Signup'
@@ -46,9 +47,9 @@ function App() {
         <Route path='/info/insurance-premium' component={InsurancePremium} />
         <Route path='/info/life-insurance' component={LifeInsurance} />
         <Route path='/info/health-insurance' component={HealthInsuarance} />
-        <Route path='/policies' component={Policy} />
+        <PrivateRoute path='/policies' component={Policy} />
 
-        <PrivateRoute exact path='/predictions' component={Predict}/>
+        <PrivateRoute exact path='/predictions' component={Predict} />
         <Route path='/predictions/health-insurance-predict' component={Mpredict} />
         <Route path='/predictions/life-insurance-predict' component={Lpredict} />
         <PrivateRoute path='/history' component={History} />
@@ -57,6 +58,7 @@ function App() {
         <PrivateRoute path='/contact' component={Contact} />
 
         <Route path='/test' component={Test} />
+        <Route path='/uploadpolicy' component={uploadpolicy} />
       </Switch>
       <Footer />
     </Router>

@@ -1,22 +1,11 @@
 import { Slider, FormLabel, RadioGroup, FormControlLabel, Radio, Switch, Button, Typography } from '@mui/material'
 import React, { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
-import { addDoc, updateDoc, deleteDoc, doc, collection, Timestamp, getDocs } from 'firebase/firestore';
+import { addDoc, updateDoc, deleteDoc, doc, collection, Timestamp, getDocs, query, where, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../Authcontext';
+import MJSONDATA from '../policy60.json'
 
-// {
-// "age" : 19,
-// "diabetes" : 0,
-// "bloodpressure" :0,
-// "transplant" : 0,
-// "chronicdisease" :0,
-// "height" : 170,
-// "weight" : 46,
-// "allergies" : 1,
-// "cancer" : 0,
-// "surgeries" : 0
-// }
 export default function Lpredict() {
 
   const { currentUser } = useAuth()
@@ -34,7 +23,11 @@ export default function Lpredict() {
   const [data_list, setData_list] = useState([])
   const [data, setData] = useState({})
   const [prediction, setPrediction] = useState(0)
+  const [policy, setpolicy] = useState([])
   const lifedbRef = collection(db, 'life-predictions')
+  // const policyRef = collection(db, "policies")
+  // const q = query(policyRef, where("yearly premium", "<", prediction + 500))
+
 
   const handleAgechange = (e, newValue) => {
     // console.log(EmailRef.current.value)
@@ -101,25 +94,45 @@ export default function Lpredict() {
       .then((res) => {
         console.log(res.data)
         setPrediction(res.data[1])
-        addDoc(lifedbRef, {
-          userid: currentUser.uid,
-          data:res.data[0],
-          prediction:res.data[1]
-        }).then(() => {
-          console.log("uploded")
-        }).catch((err) => {
-          console.log(err)
-        })
+        // addDoc(lifedbRef, {
+        //   userid: currentUser.uid,
+        //   data: res.data[0],
+        //   prediction: res.data[1]
+        // })
+        //   .then(() => {
+        //     console.log("uploded")
+        //   })
+        //   .catch((err) => {
+        //     console.log(err)
+        //   })
       })
       .catch(err => { console.log(err) })
   }
+
+  async function getpolicies() {
+
+  }
+  useEffect(async () => {
+    setpolicy(MJSONDATA.filter((val) => {
+      let val1
+      if (prediction === 0 || prediction === "") {
+        return
+      }
+      else if (val['yearly premium'] > (prediction - 250)
+        && val['yearly premium'] < (Number(prediction) + 250) 
+      ) {
+        val1 = val
+      }
+      return val1
+    }))
+  }, [prediction])
 
   // const EmailRef = useRef()
 
   return (
     <>
-      <div className='container-predict'>
-        <div className='formbox-predict'>
+      <div className='container-predict d-flex flex-column'>
+        <div className='formbox-predict w-50'>
           <div className='card-predict'>
             <FormLabel>Age</FormLabel>
             <Typography>{age}</Typography>
@@ -201,7 +214,53 @@ export default function Lpredict() {
             <h1>{prediction}</h1>
           </div>
         </div>
+        <h1 className='text-center w-auto mt-5 p-3 shadow m-auto mt-3 mb-3 rounded'
+          style={{ borderBottom: "3px solid blueviolet", background: "#fff" }}>Recommended policies</h1>
+        <table className='table w-75 border shadow rounded' style={{ background: "#fff" }}>
+          <thead>
+            <tr>
+              <th scope='col'>#</th>
+              <th scope='col'>insurer</th>
+              <th scope='col'>life cover</th>
+              <th scope='col'>gender</th>
+              <th scope='col'>monthly premium</th>
+              <th scope='col'>yearly premium</th>
+              <th scope='col'>Buy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              policy &&
+              policy
+                .map((val, id) => {
+                  return (
+                    <tr key={id}>
+                      <th>{id + 1}</th>
+                      <td>{val.insurer.toUpperCase()}</td>
+                      <td>{val['life cover']}</td>
+                      <td>{val.Gender}</td>
+                      <td>{val['mouthly premium'].toFixed(2)}</td>
+                      <td>{val['yearly premium'].toFixed(2)}</td>
+                      <td><a href='https://buy.stripe.com/test_cN26sfaELgaEbcc9AC' target="_blank" rel="noopener noreferrer">Buy</a></td>
+                    </tr>
+                  )
+                })
+            }
+          </tbody>
+        </table>
       </div>
     </>
   )
 }
+// {
+// "age" : 19,
+// "diabetes" : 0,
+// "bloodpressure" :0,
+// "transplant" : 0,
+// "chronicdisease" :0,
+// "height" : 170,
+// "weight" : 46,
+// "allergies" : 1,
+// "cancer" : 0,
+// "surgeries" : 0
+// }

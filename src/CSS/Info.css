@@ -1,10 +1,9 @@
 .mcontainer{
     width: 100%;
     display: flex;
-    font-family: sans-serif;
     color: #555;
-    letter-spacing: .5px;
-    word-spacing: 3px;
+    /* letter-spacing: .5px; */
+    word-spacing: 1px;
     line-height: 1.6;
     transition: .3s;
 } 
@@ -13,7 +12,7 @@
     background-color: white;
     padding: 20px;
     margin: 10px;
-    width: 50%;
+    width: 60%;
     transition: .3s;
     border-radius: 10px;
     resize: horizontal;
@@ -71,4 +70,7 @@
     bottom: 20px;
     left: 1400px;
     margin-top: calc(100vh + var(--offset));
+}
+.top:hover{
+    color: #fff;
 }

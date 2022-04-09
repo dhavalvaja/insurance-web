@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import '../CSS/feedback.css';
 import { useAuth } from '../Authcontext';
-import { addDoc, updateDoc, deleteDoc, doc, collection, Timestamp, getDocs } from 'firebase/firestore';
+import { addDoc, deleteDoc, doc, collection, Timestamp, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import {Button} from '@mui/material'
+import { Button } from '@mui/material'
 
 export default function Feedback() {
   const FeedbackRef = useRef()
@@ -20,8 +20,12 @@ export default function Feedback() {
     if (currentUser === null) {
       setError("you need to sign in")
     }
+    else if (FeedbackRef.current.value === "") {
+      setError("please, write somthing first...")
+    }
     else {
-      addDoc(dbRef, {
+      await addDoc(dbRef, {
+        name: currentUser.displayName,
         userid: currentUser.uid,
         usermail: currentUser.email,
         feedback: FeedbackRef.current.value,
@@ -35,8 +39,6 @@ export default function Feedback() {
         })
     }
   }
-
-
   async function getFeedbackdb() {
     const getUsers = async () => {
       const data = await getDocs(dbRef);
@@ -44,15 +46,22 @@ export default function Feedback() {
     };
     getUsers();
   }
-
   useEffect(() => {
-    console.log(feedbacks)
     const getUsers = async () => {
       const data = await getDocs(dbRef);
       setFeedbacks(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getUsers();
   }, [])
+
+  const deleteFeedback = async (id) => {
+    await deleteDoc(doc(db, "feedback", id))
+      .then(() => {
+        console.log("deleted")
+        getFeedbackdb()
+      })
+      .catch((err) => (console.log(err)))
+  }
 
   return (
     <>
@@ -72,14 +81,20 @@ export default function Feedback() {
         <Button onClick={getFeedbackdb}>refresh</Button>
 
         <div>
-          {feedbacks.map((fd,id) => {
-            return(
-
-              <div className='mycard'>
-                <p>{fd.feedback}</p>
-                <p>{fd.usermail}</p>
+          {feedbacks.map((fd, id) => {
+            return (
+              <div className='mycard' key={id}>
+                <p><b>Feedback: </b>{fd.feedback}</p>
+                <p><b>Username: </b>{fd.name}</p>
+                <p><b>Time: </b>{fd.created.toDate().toString()}</p>
+                <p><b>email: </b>{fd.usermail}</p>
+                {
+                  currentUser &&
+                    (currentUser.email === fd.usermail) ?
+                    <button onClick={() => { deleteFeedback(fd.id) }}>delete</button> : ""
+                }
               </div>
-              )
+            )
           })}
         </div>
 
