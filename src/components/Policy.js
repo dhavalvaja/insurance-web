@@ -167,7 +167,7 @@ export default function Policy() {
                     <td>{val.Gender}</td>
                     <td>{val['mouthly premium'].toFixed(2)}</td>
                     <td>{val['yearly premium'].toFixed(2)}</td>
-                    <td><a href='https://buy.stripe.com/test_cN26sfaELgaEbcc9AC' target="_blank" rel="noopener noreferrer">Buy</a></td>
+                    <td><a href=''>Buy</a></td>
                     <td><StripeCheckout
                       name={val.insurer}
                       currency='INR'
@@ -175,7 +175,7 @@ export default function Policy() {
                       token={onToken}
                       email={currentUser.email}
                       billingAddress
-                      stripeKey="pk_test_51KmArVSIQ4G64EGhp7J8K0m0eGHGukpOACoU0RrNVJLuCjuHGA0wYjYscLsJ2nV45K9x3vkdCMpYGEs3JMQCRRI000M0objpqI"
+                      stripeKey=""
                     /></td>
                   </tr>
                 )
