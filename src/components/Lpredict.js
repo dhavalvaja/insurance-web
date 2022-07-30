@@ -244,7 +244,7 @@ export default function Lpredict() {
                       <td>{val.Gender}</td>
                       <td>{val['mouthly premium'].toFixed(2)}</td>
                       <td>{val['yearly premium'].toFixed(2)}</td>
-                      <td><a href='https://buy.stripe.com/test_cN26sfaELgaEbcc9AC' target="_blank" rel="noopener noreferrer">Buy</a></td>
+                      <td><a href='' >Buy</a></td>
                     </tr>
                   )
                 })
